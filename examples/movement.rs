@@ -1,7 +1,5 @@
 use bevy::prelude::*;
-use std::cmp::max;
-use core::cmp;
-use bevy_playground::{Size,CollisionPlugin,Collision,Player};
+use bevy_collision_test::{Collision, CollisionPlugin, Player, Rad};
 
 const WALK_SPEED: f32 = 0.025;
 const RUN_SPEED: f32 = 0.05;
@@ -29,30 +27,39 @@ fn setup(
         ..Default::default()
     });
     // player
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Capsule {
-            radius: 0.5,
-            depth: 1.,
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Capsule {
+                radius: 0.5,
+                depth: 1.,
+                ..Default::default()
+            })),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(0., 1., 0.),
             ..Default::default()
-        })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        transform: Transform::from_xyz(0., 1., 0.),
-        ..Default::default()
-    }).insert(Player::default()).insert(Size(1.0));
+        })
+        .insert(Player::default())
+        .insert(Rad(1.0));
 
     // 2 objects
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube::default())),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        transform: Transform::from_xyz(2., 0.5, 0.),
-        ..Default::default()
-    }).insert(Collision).insert(Size(1.0));
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube { size: 2.0 })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        transform: Transform::from_xyz(2., 0.5, 3.),
-        ..Default::default()
-    }).insert(Collision).insert(Size(2.0));
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube::default())),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(2., 0.5, 0.),
+            ..Default::default()
+        })
+        .insert(Collision)
+        .insert(Rad(1.0));
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 2.0 })),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(2., 0.5, 3.),
+            ..Default::default()
+        })
+        .insert(Collision)
+        .insert(Rad(2.0));
 
     // light
     commands.spawn_bundle(LightBundle {
@@ -66,9 +73,16 @@ fn setup(
     });
 }
 
-fn movement(keyboard_input: Res<Input<KeyCode>>, query: Query<(&mut Transform, &Player), With<Player>>) {
+fn movement(
+    keyboard_input: Res<Input<KeyCode>>,
+    query: Query<(&mut Transform, &Player), With<Player>>,
+) {
     query.for_each_mut(|(mut transform, player)| {
-        let speed = if keyboard_input.pressed(KeyCode::LShift) { RUN_SPEED } else { WALK_SPEED };
+        let speed = if keyboard_input.pressed(KeyCode::LShift) {
+            RUN_SPEED
+        } else {
+            WALK_SPEED
+        };
 
         if keyboard_input.pressed(KeyCode::W) {
             transform.translation.z -= speed * player.forward_speed;
@@ -84,4 +98,3 @@ fn movement(keyboard_input: Res<Input<KeyCode>>, query: Query<(&mut Transform, &
         }
     });
 }
-
