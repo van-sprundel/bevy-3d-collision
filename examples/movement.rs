@@ -1,8 +1,5 @@
 use bevy::prelude::*;
-use bevy_collision_test::{Collision, CollisionPlugin, Player, Rad};
-
-const WALK_SPEED: f32 = 0.025;
-const RUN_SPEED: f32 = 0.05;
+use bevy_collision_test::{Collision, CollisionPlugin, PlayerCollision};
 
 fn main() {
     App::build()
@@ -38,8 +35,7 @@ fn setup(
             transform: Transform::from_xyz(0., 1., 0.),
             ..Default::default()
         })
-        .insert(Player::default())
-        .insert(Rad(1.0));
+        .insert(PlayerCollision(0.5));
 
     // 2 objects
     commands
@@ -49,17 +45,15 @@ fn setup(
             transform: Transform::from_xyz(2., 0.5, 0.),
             ..Default::default()
         })
-        .insert(Collision)
-        .insert(Rad(1.0));
+        .insert(Collision(0.5));
     commands
         .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 2.0 })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(2., 0.5, 3.),
+            transform: Transform::from_xyz(-2., 0.5, -2.),
             ..Default::default()
         })
-        .insert(Collision)
-        .insert(Rad(2.0));
+        .insert(Collision(1.0));
 
     // light
     commands.spawn_bundle(LightBundle {
@@ -68,33 +62,32 @@ fn setup(
     });
     // camera
     commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(-5.0, 2.5, 6.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0., 12., 0.).looking_at(Vec3::ZERO, -Vec3::Z),
         ..Default::default()
     });
 }
 
 fn movement(
     keyboard_input: Res<Input<KeyCode>>,
-    query: Query<(&mut Transform, &Player), With<Player>>,
+    query: Query<&mut Transform, With<PlayerCollision>>,
 ) {
-    query.for_each_mut(|(mut transform, player)| {
-        let speed = if keyboard_input.pressed(KeyCode::LShift) {
-            RUN_SPEED
-        } else {
-            WALK_SPEED
-        };
-
+    const SPEED: f32 = 0.025;
+    query.for_each_mut(|mut transform| {
         if keyboard_input.pressed(KeyCode::W) {
-            transform.translation.z -= speed * player.forward_speed;
+            transform.translation.z -= transform.local_z().z * SPEED;
+            transform.translation.x -= transform.local_z().x * SPEED;
         }
         if keyboard_input.pressed(KeyCode::A) {
-            transform.translation.x -= speed * player.left_speed;
+            transform.translation.z -= transform.local_x().z * SPEED;
+            transform.translation.x -= transform.local_x().x * SPEED;
         }
         if keyboard_input.pressed(KeyCode::S) {
-            transform.translation.z += speed * player.backward_speed;
+            transform.translation.z += transform.local_z().z * SPEED;
+            transform.translation.x += transform.local_z().x * SPEED;
         }
         if keyboard_input.pressed(KeyCode::D) {
-            transform.translation.x += speed * player.right_speed;
+            transform.translation.z += transform.local_x().z * SPEED;
+            transform.translation.x += transform.local_x().x * SPEED;
         }
     });
 }
