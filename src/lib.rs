@@ -5,8 +5,7 @@ pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .add_system(collision.system());
+        app.add_system(collision.system());
     }
 }
 
@@ -37,16 +36,16 @@ fn collision(
             );
 
             if top < bot && top < left && top < right {
-                a_trans.translation.z = a_trans.translation.z.clamp(f32::MIN, b_min.z-a_rad.z);
+                a_trans.translation.z = a_trans.translation.z.clamp(f32::MIN, b_min.z - a_rad.z);
             }
             if bot < top && bot < left && bot < right {
-                a_trans.translation.z = a_trans.translation.z.clamp(b_max.z+a_rad.z, f32::MAX);
+                a_trans.translation.z = a_trans.translation.z.clamp(b_max.z + a_rad.z, f32::MAX);
             }
             if left < bot && left < top && left < right {
-                a_trans.translation.x = a_trans.translation.x.clamp(f32::MIN, b_min.x-a_rad.x);
+                a_trans.translation.x = a_trans.translation.x.clamp(f32::MIN, b_min.x - a_rad.x);
             }
             if right < bot && right < top && right < top {
-                a_trans.translation.x = a_trans.translation.x.clamp(b_max.x+a_rad.x, f32::MAX);
+                a_trans.translation.x = a_trans.translation.x.clamp(b_max.x + a_rad.x, f32::MAX);
             }
         }
     }
