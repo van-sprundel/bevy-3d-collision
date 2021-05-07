@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![allow(dead_code)]
 use bevy::prelude::*;
 
 pub struct CollisionPlugin;
@@ -44,7 +44,7 @@ fn collision(
             if left < bot && left < top && left < right {
                 a_trans.translation.x = a_trans.translation.x.clamp(f32::MIN, b_min.x - a_rad.x);
             }
-            if right < bot && right < top && right < top {
+            if right < bot && right < top && right < left {
                 a_trans.translation.x = a_trans.translation.x.clamp(b_max.x + a_rad.x, f32::MAX);
             }
         }

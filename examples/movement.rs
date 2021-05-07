@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_collision_test::{Collision, CollisionPlugin, PlayerCollision};
+use bevy_collision_3d::{Collision, CollisionPlugin, PlayerCollision};
 
 fn main() {
     App::build()

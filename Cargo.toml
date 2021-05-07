@@ -1,5 +1,5 @@
 [package]
-name = "bevy-collision-test"
+name = "bevy-collision-3d"
 version = "0.1.0"
 edition = "2018"
 
