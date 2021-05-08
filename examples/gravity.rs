@@ -20,11 +20,13 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // plane
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Plane { size: 15. })),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-        ..Default::default()
-    });
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Plane { size: 10. })),
+            material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+            ..Default::default()
+        })
+        .insert(FloorCollision(5.));
     // player
     commands
         .spawn_bundle(PbrBundle {
@@ -39,27 +41,6 @@ fn setup(
         })
         .insert(PlayerCollision(0.5));
 
-    // 2 objects
-    commands
-        .spawn_bundle(PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Icosphere {
-                radius: 1.,
-                ..Default::default()
-            })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(2., 0.5, 0.),
-            ..Default::default()
-        })
-        .insert(CircleCollision(1.));
-    commands
-        .spawn_bundle(PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 2.0 })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(-2., 0.5, -2.),
-            ..Default::default()
-        })
-        .insert(AABBCollision(1.0));
-
     // light
     commands.spawn_bundle(LightBundle {
         transform: Transform::from_xyz(4.0, 8.0, 4.0),
@@ -67,7 +48,7 @@ fn setup(
     });
     // camera
     commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(0., 12., 0.).looking_at(Vec3::ZERO, -Vec3::Z),
+        transform: Transform::from_xyz(0., 5., 5.).looking_at(Vec3::ZERO, -Vec3::Z),
         ..Default::default()
     });
 }
